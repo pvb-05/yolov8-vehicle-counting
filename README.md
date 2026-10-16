@@ -1,188 +1,100 @@
-# YOLOv8 Vehicle Counting 🚗💨
+# YOLOv8 Đếm Phương Tiện 🚗💨
 
-> **Đồ án Sinh viên Khoa Công nghệ Thông tin**  
-> **Hệ thống đếm phương tiện giao thông trong video**
+> Đồ án sinh viên — Hệ thống đếm phương tiện giao thông trong video
 
-This project uses YOLOv8 to detect vehicles in video and count them automatically. It can be used as a learning project for computer vision, object detection, and traffic monitoring applications.
+Kho chứa này sử dụng YOLOv8 để phát hiện và đếm các phương tiện (ô tô, xe máy, xe tải, xe buýt) trong video. README này đã được viết bằng tiếng Việt và được tinh chỉnh theo cấu trúc hiện có của repo (`main.py`, `requirements.txt`, thư mục `assets`).
 
-## Overview
+## Tổng quan
 
-The system detects vehicles from video frames using YOLOv8, then applies counting logic to track the number of vehicles passing a defined line or area. The project is designed to be easy to understand, configure, and extend for academic and research purposes.
+Luồng chính trong `main.py`:
+- Tải mô hình YOLOv8 (mặc định: `yolov8m.pt`).
+- Sử dụng DeepSORT (`deep-sort-realtime`) để theo dõi các đối tượng qua các khung hình.
+- Đếm phương tiện khi tâm của bounding box đi qua một đường ngang cố định.
+- Lưu video đầu ra `result.mp4` kèm chú thích và hiển thị thông tin đếm trên cửa sổ.
 
-## Features
+### Các lớp phương tiện (theo file `main.py`)
+Trong mã nguồn, ánh xạ lớp được định nghĩa như sau (mã lớp COCO):
+- 2 → Car (Ô tô)
+- 3 → Motor (Xe máy)
+- 5 → Bus (Xe buýt)
+- 7 → Truck (Xe tải)
 
-- Vehicle detection using YOLOv8
-- Real-time or offline video processing
-- Counting vehicles crossing a detection line
-- Easy-to-adjust configuration for different scenes
-- Output video with annotated detections
-- Suitable for student projects and experimentation
+Nếu bạn dùng bộ class khác, hãy cập nhật từ điển `VEHICLES` trong `main.py`.
 
-## Tech Stack
+## Cấu trúc repository (hiện tại)
 
-- Python
-- YOLOv8 (Ultralytics)
-- OpenCV
-- NumPy
-- Optional: tracking and data export libraries
-
-## Repository Structure
-
-```text
+```
 .
-├── README.md
-├── requirements.txt
-├── data/
-│   ├── videos/
-│   └── labels/
-├── src/
-│   ├── detect.py
-│   ├── count.py
-│   ├── config.py
-│   └── utils.py
-├── weights/
-│   └── best.pt
-├── runs/
-│   └── detect/
-└── output/
-    └── result.mp4
+├── .gitignore
+├── README.md        # (tệp này)
+├── assets/          # chứa video mẫu (ví dụ: assets/video.mp4)
+├── main.py          # script chính: chạy phát hiện, theo dõi, đếm
+├── requirements.txt # phụ thuộc Python
 ```
 
-## Requirements
+## Yêu cầu
 
 - Python 3.8+
-- pip
-- A GPU is optional but recommended for faster inference
+- gói Python trong `requirements.txt` (đã bao gồm `ultralytics`, `opencv-python`, `deep-sort-realtime`, `numpy`, v.v.)
+- GPU (tùy chọn, tăng tốc inference)
 
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-If needed, install YOLOv8 manually:
-
-```bash
-pip install ultralytics opencv-python numpy
-```
-
-## Installation
-
-1. Clone the project:
-
-```bash
-git clone https://github.com/pvb-05/yolov8-vehicle-counting.git
-cd yolov8-vehicle-counting
-```
-
-2. Create a virtual environment (optional but recommended):
+Cài đặt:
 
 ```bash
 python -m venv venv
-source venv/bin/activate   # Linux/macOS
-# or
-venv\Scripts\activate      # Windows
-```
-
-3. Install dependencies:
-
-```bash
+source venv/bin/activate      # macOS / Linux
+# hoặc
+venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
-## Usage
+Lưu ý: file `requirements.txt` đã liệt kê `ultralytics` và `deep-sort-realtime`.
 
-Run the detection and counting pipeline on a video file:
+## Chạy nhanh (Quick start)
 
-```bash
-python src/count.py --source data/videos/input.mp4 --weights weights/best.pt --conf 0.25
-```
+Mặc định `main.py` đang đọc video từ `assets/video.mp4` và ghi kết quả ra `result.mp4`.
 
-Example arguments:
-
-- `--source`: path to input video
-- `--weights`: YOLOv8 model weights
-- `--conf`: confidence threshold
-- `--output`: output directory or output video path
-
-The script will:
-
-- load the YOLOv8 model
-- detect vehicles in each frame
-- count vehicles crossing the designated line
-- save the result video and metrics
-
-## Dataset
-
-Prepare a dataset with labeled vehicle images or videos. The labels should match the classes you want the model to detect, such as:
-
-- car
-- truck
-- bus
-- motorcycle
-- bicycle
-
-If you are using training data, organize it in YOLO format and provide a dataset configuration file.
-
-## Training
-
-Train a YOLOv8 model on your custom dataset:
+Chạy:
 
 ```bash
-yolo task=detect mode=train model=yolov8n.pt data=data/custom_data.yaml epochs=50 imgsz=640
+python main.py
 ```
 
-You can customize:
+Nếu muốn dùng video khác, chỉnh biến trong `main.py`:
+- Dòng 16: thay `assets/video.mp4` bằng đường dẫn video của bạn.
+- Dòng 6: nếu dùng trọng số khác, thay `yolov8m.pt` bằng `weights/best.pt` hoặc đường dẫn đến file .pt của bạn.
+- Ngưỡng tin cậy: trong vòng lặp, mã bỏ qua detections có `conf < 0.5`. Có thể chỉnh giá trị này tùy ý.
 
-- number of epochs
-- image size
-- batch size
-- classes used for detection
+## Tham số cấu hình quan trọng trong `main.py`
+- LINE (dòng đếm): được tính từ chiều cao khung hình (mặc định là 60% chiều cao). Thay đổi tại dòng `LINE = int(original_h*0.6)`.
+- OFFSET: vùng bù xung quanh đường đếm (mặc định 40 px). Điều chỉnh nếu camera có nhiều jitter.
+- Ngưỡng confidence: hiện đang là `conf < 0.5` (bỏ detection có confidence thấp hơn 0.5).
 
-## Evaluation
+## Đầu ra
 
-After training, evaluate the model quality:
+- `result.mp4`: video được chú thích (bounding box, ID, class, tâm) và đường đếm.
+- Trên cửa sổ hiển thị cũng sẽ in tổng số đối tượng đã được theo dõi (`Count`) và số lượng theo từng loại (Car, Motor, Bus, Truck).
 
-```bash
-yolo task=detect mode=val model=weights/best.pt data=data/custom_data.yaml
-```
+Nếu bạn muốn xuất kết quả ra CSV (số lượng theo khung hoặc theo đoạn thời gian), tôi có thể bổ sung tính năng lưu file CSV.
 
-This helps measure detection accuracy and determine whether the model is suitable for counting tasks.
+## Gợi ý cải tiến
 
-## Output
+- Thêm tham số dòng lệnh (argparse) để dễ cấu hình (đường vào, đường ra, trọng số, ngưỡng confidence, v.v.).
+- Lưu log/CSV cho phân tích sau này.
+- Hỗ trợ nhiều lớp hơn hoặc ánh xạ tên lớp từ file cấu hình dataset.
+- Thêm xử lý để reset bộ đếm cho video dài hoặc phân đoạn.
 
-The system can generate:
+## Giấy phép
 
-- annotated output video
-- vehicle count totals
-- logs or statistics for each processed video
+Mặc định: MIT. Nếu bạn muốn giấy phép khác, hãy cập nhật tệp LICENCE hoặc README.
 
-## Project Goals
+## Liên hệ
 
-This repository can serve as:
+Tác giả: Bac Phan (tên người commit) — email: phanvanbac15112005@gmail.com
 
-- a student final-year project
-- a computer vision demo
-- a starting point for intelligent traffic monitoring systems
-- a foundation for expanding to multi-camera counting or traffic analytics
-
-## Contributing
-
-Contributions are welcome. If you want to improve the project:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Open a pull request
-
-## License
-
-This project is licensed under the MIT License unless otherwise stated.
-
-## Contact
-
-For questions or collaboration, please contact the project author or open an issue in the GitHub repository.
 
 ---
 
-This README is a general template for the project. If you want, I can further refine it into a more professional Vietnamese version or make it match the exact structure of your actual repo files.
+Tôi đã cập nhật README sang tiếng Việt và chỉnh nội dung để khớp chính xác với các file hiện có trong repository (main.py, requirements.txt, assets). Nếu bạn muốn, tôi có thể tiếp tục và:
+- Thêm hướng dẫn chi tiết chỉnh sửa `main.py` để nhận tham số CLI; hoặc
+- Tự động sửa `main.py` để chấp nhận tham số dòng lệnh và lưu CSV kết quả — bạn muốn tôi làm bước nào tiếp theo không?
