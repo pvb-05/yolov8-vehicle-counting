@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 Lưu ý: file `requirements.txt` đã liệt kê `ultralytics` và `deep-sort-realtime`.
 
-## Chạy nhanh (Quick start)
+## Chạy nhanh
 
 Mặc định `main.py` đang đọc video từ `assets/video.mp4` và ghi kết quả ra `result.mp4`.
 
@@ -84,17 +84,9 @@ Nếu bạn muốn xuất kết quả ra CSV (số lượng theo khung hoặc th
 - Hỗ trợ nhiều lớp hơn hoặc ánh xạ tên lớp từ file cấu hình dataset.
 - Thêm xử lý để reset bộ đếm cho video dài hoặc phân đoạn.
 
-## Giấy phép
-
-Mặc định: MIT. Nếu bạn muốn giấy phép khác, hãy cập nhật tệp LICENCE hoặc README.
-
 ## Liên hệ
 
-Tác giả: Bac Phan (tên người commit) — email: phanvanbac15112005@gmail.com
+Tác giả: Bac Phan — email: phanvanbac15112005@gmail.com
 
 
 ---
-
-Tôi đã cập nhật README sang tiếng Việt và chỉnh nội dung để khớp chính xác với các file hiện có trong repository (main.py, requirements.txt, assets). Nếu bạn muốn, tôi có thể tiếp tục và:
-- Thêm hướng dẫn chi tiết chỉnh sửa `main.py` để nhận tham số CLI; hoặc
-- Tự động sửa `main.py` để chấp nhận tham số dòng lệnh và lưu CSV kết quả — bạn muốn tôi làm bước nào tiếp theo không?
